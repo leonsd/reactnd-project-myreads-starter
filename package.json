@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "escape-string-regexp": "^1.0.5",
     "prop-types": "^15.5.8",
     "proptypes": "^1.1.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-router-dom": "^4.2.2",
+    "react-spinners": "^0.2.5",
     "react-throttle": "^0.3.0",
     "sortby": "0.0.2"
   },

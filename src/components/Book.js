@@ -1,7 +1,10 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import sortBy from 'sort-by'
 
 const Books = (props) => {
   const { books, onUpdateShelf } = props
+  books.sort(sortBy('title'))
 
   return(
     <ol className="books-grid">
@@ -36,6 +39,11 @@ const Books = (props) => {
       ))}
     </ol>
   )
+}
+
+Books.propTypes = {
+  books: PropTypes.array.isRequired,
+  onUpdateShelf: PropTypes.func.isRequired
 }
 
 export default Books

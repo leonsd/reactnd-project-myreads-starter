@@ -1,12 +1,20 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Debounce } from 'react-throttle'
+import PropTypes from 'prop-types'
 import Book from './Book'
+import Spinner from './Spinner'
 import * as BooksAPI from '../utils/BooksAPI'
 
 class SearchBooks extends Component {
+  static propTypes = {
+    books: PropTypes.array.isRequired,
+    onUpdateShelf: PropTypes.func.isRequired
+  }
+
   state = {
-    books: []
+    books: [],
+    loading: false
   }
 
   onUpdateQuery = (query) => {
@@ -20,6 +28,7 @@ class SearchBooks extends Component {
   }
 
   searchBooks = (query) => {
+    this.setState({ loading: true })
     BooksAPI.search(query).then(results => {
       if (results.length) {
         const books = this.props.books.filter(book => book.shelf !== undefined)
@@ -33,7 +42,10 @@ class SearchBooks extends Component {
         })
       }
 
-      this.setState({ books: results.length ? results : [] })
+      this.setState({
+        books: results.length ? results : [],
+        loading: false
+      })
     })
   }
 
@@ -42,6 +54,7 @@ class SearchBooks extends Component {
 
     return(
       <div className="search-books">
+        <Spinner loading={this.state.loading}/>
         <div className="search-books-bar">
           <Link to="/" className="close-search">Close</Link>
           <div className="search-books-input-wrapper">
