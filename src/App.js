@@ -6,9 +6,7 @@ import * as BooksAPI from './utils/BooksAPI'
 
 class BooksApp extends Component {
   state = {
-      currentlyReading: [],
-      wantToRead:       [],
-      read:             []
+    books: []
   }
 
   componentDidMount() {
@@ -16,95 +14,39 @@ class BooksApp extends Component {
   }
 
   getAllBooks() {
-    BooksAPI.getAll().then(data => {
-      let books = {
-        currentlyReading: [],
-        wantToRead:       [],
-        read:             []
-      }
-
-      for (const book of data) {
-        switch (book.shelf) {
-          case "currentlyReading":
-            books.currentlyReading.push(book)
-            break;
-          case "wantToRead":
-            books.wantToRead.push(book)
-            break;
-          case "read":
-            books.read.push(book)
-            break;
-          default:
-            break;
-        }
-      }
-
-      this.setState({
-        currentlyReading: books.currentlyReading,
-        wantToRead:       books.wantToRead,
-        read:             books.read
-      })
+    BooksAPI.getAll().then(results => {
+      this.setState({ books: results })
     })
   }
 
   updateShelf = (book, shelf) => {
-    switch (book.shelf) {
-      case "currentlyReading":
-        this.setState((state) => ({
-          currentlyReading: state.currentlyReading.filter((b) => b.id !== book.id)
-        }))
-        break;
-        case "wantToRead":
-        this.setState((state) => ({
-          wantToRead: state.wantToRead.filter((b) => b.id !== book.id)
-        }))
-        break;
-        case "read":
-        this.setState((state) => ({
-          read: state.read.filter((b) => b.id !== book.id)
-        }))
-        break;
-      default:
-        break;
-    }
-
-    book.shelf = shelf
-
     BooksAPI.update(book, shelf).then(data => {
-      switch (book.shelf) {
-        case "currentlyReading":
-          this.setState((state) => ({
-            currentlyReading: state.currentlyReading.concat([ book ])
-          }))
-          break;
-        case "wantToRead":
-          this.setState((state) => ({
-            wantToRead: state.wantToRead.concat([ book ])
-          }))
-          break;
-        case "read":
-          this.setState((state) => ({
-            read: state.read.concat([ book ])
-          }))
-          break;
-        default:
-          break;
-      }
+      book.shelf = shelf
+
+      this.setState(state => (
+        state.books = state.books.filter(b => b.id !== book.id).concat([book])
+      ))
     })
   }
 
   render() {
+    const shelfs = [
+      { name: "Currently Reading", books: this.state.books.filter(book => book.shelf === "currentlyReading") },
+      { name: "Want To Read", books: this.state.books.filter(book => book.shelf === "wantToRead") },
+      { name: "Read", books: this.state.books.filter(book => book.shelf === "read") },
+    ]
+
     return (
       <div className="app">
         <Route exact path="/" render={() => (
           <Shelf
-            shelfs={this.state}
+            shelfs={shelfs}
             onUpdateShelf={this.updateShelf}
           />
         )}/>
         <Route path="/search" render={() => (
           <Search
-            books={this.state}
+            books={this.state.books}
             onUpdateShelf={this.updateShelf}
           />
         )}/>

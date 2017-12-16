@@ -136,6 +136,7 @@ html, body, .root {
 .book-title,
 .book-authors {
   font-size: 0.8em;
+  text-decoration: none;
 }
 .book-title {
   margin-top: 10px;
